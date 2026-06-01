@@ -225,3 +225,8 @@ BenchmarkDotNet.Artifacts
 
 .playwright-cli
 .claude/*
+
+# Ota local runtime artifacts
+.ota/state/*
+.ota/receipts/*
+.ota/proof/*

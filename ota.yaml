@@ -1,0 +1,142 @@
+version: 1
+metadata:
+  ota:
+    minimum_version: "1.6.18"
+project:
+  name: OrchardCore
+  description: OrchardCore readiness slice covering .NET restore, build, and test at repo root
+execution:
+  default_context: host
+  contexts:
+    host:
+      backend: native
+    app:
+      backend: container
+      lifecycle: ephemeral
+      container:
+        image: mcr.microsoft.com/dotnet/sdk:9.0
+        engines:
+          - docker
+          - podman
+runtimes:
+  dotnet: '9.0'
+tools:
+  dotnet: '*'
+checks:
+- name: dotnet-installed
+  kind: precondition
+  severity: error
+  run: dotnet --version
+tasks:
+  build:
+    context: host
+    category: build
+    description: Build the default .NET solution or project.
+    run: dotnet build
+    execution:
+      default_mode: native
+      modes:
+        native:
+          context: host
+          run: dotnet build
+        container:
+          context: app
+          run: dotnet build
+    depends_on:
+      - setup
+    notes: Build the default solution from repository root.
+  setup:
+    context: host
+    category: setup
+    description: Restore the default .NET dependencies.
+    run: dotnet restore
+    execution:
+      default_mode: native
+      modes:
+        native:
+          context: host
+          run: dotnet restore
+        container:
+          context: app
+          run: dotnet restore
+    effects:
+      network: true
+      network_kind: dependency_hydration
+    notes: Restore .NET dependencies.
+    internal: true
+  test:
+    context: host
+    category: test
+    description: Run the default .NET test suite.
+    run: dotnet test
+    execution:
+      default_mode: native
+      modes:
+        native:
+          context: host
+          run: dotnet test
+        container:
+          context: app
+          run: dotnet test
+    depends_on:
+      - setup
+    safe_for_agent: true
+    notes: Run .NET tests from repository root.
+  verify:
+    context: host
+    category: test
+    description: Aggregate baseline OrchardCore verification checks.
+    run: "true"
+    execution:
+      default_mode: native
+      modes:
+        native:
+          context: host
+          run: "true"
+        container:
+          context: app
+          run: "true"
+    depends_on:
+      - build
+      - test
+    safe_for_agent: true
+    notes: Contract-level verification path.
+agent:
+  posture: readiness_strict
+  entrypoint: setup
+  default_task: verify
+  safe_tasks:
+  - test
+  - verify
+  verify_after_changes:
+  - verify
+  writable_paths:
+  - src/OrchardCore
+  - src/OrchardCore.Cms.Web
+  - src/OrchardCore.Modules
+  - src/OrchardCore.Mvc.Web
+  - src/OrchardCore.Themes
+  - test
+  protected_paths:
+  - .github/workflows
+  - global.json
+  - yarn.lock
+  - ota.yaml
+  inferred_boundary:
+    reviewed: false
+    provenance:
+      writable_paths:
+      - init:common_source_roots
+      - init:nested_project_root
+      - init:stack_source_scan
+      protected_paths:
+      - init:contract_file_default
+  bootstrap:
+    ota:
+      note: Only install ota if it is missing and installation is approved.
+      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_VERSION=v1.6.18 sh
+      powershell: $env:OTA_VERSION='v1.6.18'; irm https://dist.ota.run/install.ps1 | iex
+  notes: |
+    Use `ota tasks --safe --use` to inspect the approved agent task surface before execution.
+    Use `ota validate` before changes and `ota doctor` after edits.
+    Use `ota run verify` for the contract verification path.
