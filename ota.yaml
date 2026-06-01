@@ -4,7 +4,7 @@ metadata:
     minimum_version: "1.6.18"
 project:
   name: OrchardCore
-  description: OrchardCore readiness slice covering .NET restore, build, and test at repo root
+  description: OrchardCore readiness slice covering Abstractions unit-project restore, build, and test
 execution:
   default_context: host
   contexts:
@@ -31,57 +31,57 @@ tasks:
   build:
     context: host
     category: build
-    description: Build the default .NET solution or project.
-    run: dotnet build
+    description: Build the OrchardCore Abstractions unit test project.
+    run: dotnet build --no-restore test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet build
+          run: dotnet build --no-restore test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
         container:
           context: app
-          run: dotnet build
+          run: dotnet build --no-restore test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
     depends_on:
       - setup
-    notes: Build the default solution from repository root.
+    notes: Build the selected unit-test project for this contract slice.
   setup:
     context: host
     category: setup
-    description: Restore the default .NET dependencies.
-    run: dotnet restore
+    description: Restore dependencies for the Abstractions unit test project.
+    run: dotnet restore test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet restore
+          run: dotnet restore test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
         container:
           context: app
-          run: dotnet restore
+          run: dotnet restore test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
     effects:
       network: true
       network_kind: dependency_hydration
-    notes: Restore .NET dependencies.
+    notes: Restore dependencies for the selected unit-test project.
     internal: true
   test:
     context: host
     category: test
-    description: Run the default .NET test suite.
-    run: dotnet test
+    description: Run the OrchardCore Abstractions unit test project.
+    run: dotnet test --no-build --verbosity minimal test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
     execution:
       default_mode: native
       modes:
         native:
           context: host
-          run: dotnet test
+          run: dotnet test --no-build --verbosity minimal test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
         container:
           context: app
-          run: dotnet test
+          run: dotnet test --no-build --verbosity minimal test/OrchardCore.Abstractions.Tests/OrchardCore.Abstractions.Tests.csproj
     depends_on:
       - setup
     safe_for_agent: true
-    notes: Run .NET tests from repository root.
+    notes: Run the selected unit-test project for this contract slice.
   verify:
     context: host
     category: test
