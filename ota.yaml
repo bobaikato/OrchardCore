@@ -19,7 +19,7 @@ execution:
           - docker
           - podman
 runtimes:
-  dotnet: '9.0'
+  dotnet: '10.0'
 tools:
   dotnet: '*'
 checks:
