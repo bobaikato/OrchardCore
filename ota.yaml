@@ -87,29 +87,16 @@ tasks:
     requirements:
       toolchains:
         - dotnet
-    safe_for_agent: true
+    safe_for_agent: false
     notes: Run the selected unit-test project for this contract slice.
   verify:
-    context: host
     category: test
     description: Aggregate baseline OrchardCore verification checks.
-    run: "true"
-    execution:
-      default_mode: native
-      modes:
-        native:
-          context: host
-          run: "true"
-        container:
-          context: app
-          run: "true"
-    depends_on:
-      - build
-      - test
-    requirements:
-      toolchains:
-        - dotnet
-    safe_for_agent: true
+    aggregate:
+      tasks:
+        - build
+        - test
+    safe_for_agent: false
     notes: Contract-level verification path.
 workflows:
   default: verify
@@ -125,11 +112,8 @@ agent:
   posture: readiness_strict
   entrypoint: setup
   default_task: verify
-  safe_tasks:
-  - test
-  - verify
-  verify_after_changes:
-  - verify
+  safe_tasks: []
+  verify_after_changes: []
   writable_paths:
   - src/OrchardCore
   - src/OrchardCore.Cms.Web
@@ -154,8 +138,8 @@ agent:
   bootstrap:
     ota:
       note: Only install ota if it is missing and installation is approved.
-      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_VERSION=v1.6.20 sh
-      powershell: $env:OTA_VERSION='v1.6.20'; irm https://dist.ota.run/install.ps1 | iex
+      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_VERSION=v1.6.21 sh
+      powershell: $env:OTA_VERSION='v1.6.21'; irm https://dist.ota.run/install.ps1 | iex
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.
