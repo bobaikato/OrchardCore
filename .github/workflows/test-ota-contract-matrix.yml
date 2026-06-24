@@ -176,7 +176,7 @@ jobs:
         run: |
           set -euo pipefail
           ota tasks --json --via container . > ota-tasks-container.json
-          node -e 'const fs=require("fs");const t=JSON.parse(fs.readFileSync("ota-tasks-container.json","utf8")).tasks||[];for(const x of t){if((x.category||"")!=="dev")console.log(x.name)}' > ota-container-exec-task-names.txt
+          node -e 'const fs=require("fs");const t=JSON.parse(fs.readFileSync("ota-tasks-container.json","utf8")).tasks||[];for(const x of t){if((x.category||"")!=="dev" && !x.internal && x.execution?.default_mode==="container" && !x.aggregate)console.log(x.name)}' > ota-container-exec-task-names.txt
           while IFS= read -r task; do
             [ -z "$task" ] && continue
             echo ">>> [container exec] $task"
