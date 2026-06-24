@@ -148,8 +148,9 @@ agent:
   bootstrap:
     ota:
       note: Only install ota if it is missing and installation is approved.
-      sh: curl -fsSL https://dist.ota.run/install.sh | OTA_GIT_REV=f78c7f1cd4fdae0c92be06d9834e2b3c9957beee sh -s -- --from-git
-      powershell: $env:OTA_GIT_REV='f78c7f1cd4fdae0c92be06d9834e2b3c9957beee'; & ([scriptblock]::Create((irm https://dist.ota.run/install.ps1))) -FromGit
+      source:
+        kind: git_rev
+        rev: f78c7f1cd4fdae0c92be06d9834e2b3c9957beee
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.
