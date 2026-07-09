@@ -149,8 +149,8 @@ agent:
     ota:
       note: Only install ota if it is missing and installation is approved.
       source:
-        kind: version
-        version: v1.6.23
+        kind: git_rev
+        rev: 8dc86453e3aeee1d22549f7ce6ba222ceb98920d
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.
