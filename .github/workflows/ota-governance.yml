@@ -1,0 +1,41 @@
+# <!--
+#                 █████
+#                ░░███
+#        ██████  ███████    ██████
+#       ███░░███░░░███░    ░░░░░███
+#      ░███ ░███  ░███      ███████
+#      ░███ ░███  ░███ ███ ███░░███
+#      ░░██████   ░░█████ ░░████████
+#       ░░░░░░     ░░░░░   ░░░░░░░░
+#
+#    Copyright (C) 2026 — 2026, Ota. All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0. See LICENSE for the specific language
+#    governing permissions and limitations under the License.
+# -->
+
+name: Ota governance
+
+on:
+  push:
+    branches:
+      - bobai/OrchardCore-ota-pressure
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-native-linux:
+    uses: ./.github/workflows/ota-verify-native-linux.yml
+    with:
+      ota_projection_identity: sha256:fdcf5435a625a2a175c993c27996754b33d43d11457c006a2d0448da950b61fb
+      ota_target_os: linux
+      ota_runner: ubuntu-latest
+
+  verify-container-linux:
+    uses: ./.github/workflows/ota-verify-container-linux.yml
+    with:
+      ota_projection_identity: sha256:4130f484ac8fed9d3aba19123a3f23c021a053245cae1afbba270a976fea8d1d
+      ota_target_os: linux
+      ota_runner: ubuntu-latest

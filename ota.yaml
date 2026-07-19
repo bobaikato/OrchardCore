@@ -44,6 +44,7 @@ tasks:
           context: app
     depends_on:
       - setup
+    safe_for_agent: true
     requirements:
       toolchains:
         - dotnet
@@ -71,6 +72,7 @@ tasks:
     effects:
       network: true
       network_kind: dependency_hydration
+    safe_for_agent: true
     notes: Restore dependencies for the selected unit-test project.
     internal: true
   test:
@@ -97,7 +99,7 @@ tasks:
     requirements:
       toolchains:
         - dotnet
-    safe_for_agent: false
+    safe_for_agent: true
     notes: Run the selected unit-test project for this contract slice.
   verify:
     category: test
@@ -106,7 +108,7 @@ tasks:
       tasks:
         - build
         - test
-    safe_for_agent: false
+    safe_for_agent: true
     notes: Contract-level verification path.
 workflows:
   default: verify
@@ -122,7 +124,11 @@ agent:
   posture: readiness_strict
   entrypoint: setup
   default_task: verify
-  safe_tasks: []
+  safe_tasks:
+    - setup
+    - build
+    - test
+    - verify
   verify_after_changes: []
   writable_paths:
   - src/OrchardCore
@@ -149,8 +155,8 @@ agent:
     ota:
       note: Only install ota if it is missing and installation is approved.
       source:
-        kind: git_rev
-        rev: 8dc86453e3aeee1d22549f7ce6ba222ceb98920d
+        kind: branch
+        branch: 1.6.25-implementation
   notes: |
     Use `ota workflows` to inspect declared workflow paths.
     Use `ota up --workflow verify` when you want setup and verification through one declared path.

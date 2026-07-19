@@ -228,5 +228,6 @@ BenchmarkDotNet.Artifacts
 
 # Ota local runtime artifacts
 .ota/state/*
+.ota/contracts/*
 .ota/receipts/*
 .ota/proof/*
